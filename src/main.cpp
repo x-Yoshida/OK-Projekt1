@@ -55,35 +55,37 @@ int main(int argc, char** argv)
             Task tmpTask;
             in >> tmpTask.mNumber >> tmpTask.pTime;
             tmpJob.tasks.push_back(tmpTask);
-            Machine tmpMachine;
-            machines.push_back(tmpMachine);
         }
         jobs.push_back(tmpJob);
         res.push_back(std::vector<int>{});
         jIndex.push_back(i);
     }
     in.close();
-
-    for( Job j : jobs)
+    for(int i=0;i<numOfMachines;i++)
     {
-        std::cout << j << std::endl;
+        Machine tmpMachine;
+        machines.push_back(tmpMachine);
     }
-    std::cout << std::endl;
+    // for( Job j : jobs)
+    // {
+    //     std::cout << j << std::endl;
+    // }
+    // std::cout << std::endl;
 
     std::vector<Job> testJobs = jobs;
     int timeElapsed=0;
 
     //if(0)
-    while (!testJobs.empty())
+    while (!jIndex.empty())
     {
         int shortestTask = INT32_MAX;
         //int i=0;
         std::vector<int> neededMachines;
-        for(Job j : testJobs)
+        for(int j : jIndex)
         {
-            if(!isInVector(neededMachines,j.tasks[0].mNumber))
+            if(!isInVector(neededMachines,testJobs[j].tasks[0].mNumber))
             {
-                neededMachines.push_back(j.tasks[0].mNumber);
+                neededMachines.push_back(testJobs[j].tasks[0].mNumber);
             }
             //i++;
         }
@@ -101,20 +103,21 @@ int main(int argc, char** argv)
             
             int minTimeForMachine=INT32_MAX;
             int jobId;
-            for(Job j : testJobs)
+            for(int j : jIndex)
             {
-                if(!(j.tasks[0].mNumber==i))
+                if(!(testJobs[j].tasks[0].mNumber==i))
                 {
                     continue;
                 }
-                if(minTimeForMachine>j.tasks[0].pTime)
+                if(minTimeForMachine>testJobs[j].tasks[0].pTime)
                 {
-                    minTimeForMachine=j.tasks[0].pTime;
-                    jobId=j.id;
+                    minTimeForMachine=testJobs[j].tasks[0].pTime;
+                    jobId=testJobs[j].id;
                 }
             }
             machines[i].timeLeft=minTimeForMachine;
             machines[i].workingOnJob=jobId;
+            res[machines[i].workingOnJob].push_back(timeElapsed);
             if(shortestTask>minTimeForMachine)
             {
                 shortestTask=minTimeForMachine;
@@ -126,21 +129,32 @@ int main(int argc, char** argv)
             machines[i].timeLeft-=shortestTask;
             if(machines[i].timeLeft==0)
             {
-                res[machines[i].workingOnJob].push_back(timeElapsed);
-                testJobs[machines[i].workingOnJob].tasks.erase(testJobs[machines[i].workingOnJob].tasks.begin() + 0);
+                //res[machines[i].workingOnJob].push_back(timeElapsed);
+                testJobs[machines[i].workingOnJob].tasks.erase(testJobs[machines[i].workingOnJob].tasks.begin());
                 if(testJobs[machines[i].workingOnJob].tasks.empty())
                 {
-                    testJobs.erase(testJobs.begin()+machines[i].workingOnJob);
+                    jIndex.erase(std::find(jIndex.begin(),jIndex.end(),machines[i].workingOnJob));
                 }
             }
         }
         timeElapsed+=shortestTask;
-        std::cout << timeElapsed << std::endl;
+        //std::cout << timeElapsed << std::endl;
     }
-    
+
+    std::ofstream out;
+    out.open("res.txt");
+    out<< timeElapsed << std::endl;
+
+    for(int i = 0;i<numOfJobs;i++)
+    {
+        for(int j= 0; j<numOfMachines;j++)
+        {
+            out << res[i][j] << " ";
+        }
+        out << std::endl;
+    }
     //int jId=findShortest(testJobs,1);
 
-    std::cout<< timeElapsed << std::endl;
 
     return 0;
 }
