@@ -18,13 +18,13 @@ bool isInVector(std::vector<int> v, int num)
 
 int findShortest(std::vector<Job> jobs,int mId)
 {
-    int min=-1;
+    int min=INT32_MAX;
     int jobId;
     for(Job j : jobs)
     {
         if(j.tasks[0].mNumber==mId)
         {
-            if(min==-1 or min>j.tasks[0].pTime)
+            if(min>j.tasks[0].pTime)
             {
                 min=j.tasks[0].pTime;
                 jobId=j.id;
@@ -42,6 +42,7 @@ int main(int argc, char** argv)
     in.open("test.txt");
     std::vector<Job> jobs;
     std::vector<Machine> machines;
+    std::vector<int> jIndex;
     std::vector<std::vector<int>> res;
     int numOfJobs,numOfMachines;
     in>>numOfJobs>>numOfMachines;
@@ -58,6 +59,8 @@ int main(int argc, char** argv)
             machines.push_back(tmpMachine);
         }
         jobs.push_back(tmpJob);
+        res.push_back(std::vector<int>{});
+        jIndex.push_back(i);
     }
     in.close();
 
@@ -68,12 +71,12 @@ int main(int argc, char** argv)
     std::cout << std::endl;
 
     std::vector<Job> testJobs = jobs;
-    int timeElapsed;
+    int timeElapsed=0;
 
-    if(0)
+    //if(0)
     while (!testJobs.empty())
     {
-        int shortestTask = -1;
+        int shortestTask = INT32_MAX;
         //int i=0;
         std::vector<int> neededMachines;
         for(Job j : testJobs)
@@ -89,25 +92,55 @@ int main(int argc, char** argv)
         {
             if(machines[i].timeLeft!=0)
             {
+                if(shortestTask>machines[i].timeLeft)
+                {
+                    shortestTask=machines[i].timeLeft;
+                }
                 continue;
             }
-            int minTimeForMachine=-1;
+            
+            int minTimeForMachine=INT32_MAX;
             int jobId;
+            for(Job j : testJobs)
+            {
+                if(!(j.tasks[0].mNumber==i))
+                {
+                    continue;
+                }
+                if(minTimeForMachine>j.tasks[0].pTime)
+                {
+                    minTimeForMachine=j.tasks[0].pTime;
+                    jobId=j.id;
+                }
+            }
             machines[i].timeLeft=minTimeForMachine;
             machines[i].workingOnJob=jobId;
-            if(shortestTask==-1 or shortestTask>minTimeForMachine)
+            if(shortestTask>minTimeForMachine)
             {
                 shortestTask=minTimeForMachine;
             }
 
         }
-
+        for(int i : neededMachines)
+        {
+            machines[i].timeLeft-=shortestTask;
+            if(machines[i].timeLeft==0)
+            {
+                res[machines[i].workingOnJob].push_back(timeElapsed);
+                testJobs[machines[i].workingOnJob].tasks.erase(testJobs[machines[i].workingOnJob].tasks.begin() + 0);
+                if(testJobs[machines[i].workingOnJob].tasks.empty())
+                {
+                    testJobs.erase(testJobs.begin()+machines[i].workingOnJob);
+                }
+            }
+        }
+        timeElapsed+=shortestTask;
+        std::cout << timeElapsed << std::endl;
     }
     
-    res.push_back(std::vector<int>{1});
     //int jId=findShortest(testJobs,1);
 
-    std::cout<< res[0][0] << std::endl;
+    std::cout<< timeElapsed << std::endl;
 
     return 0;
 }
