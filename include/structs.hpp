@@ -12,11 +12,12 @@ struct Task
 
 struct Job
 {
+    int id;
     std::vector<Task> tasks;
     int shortestPossiblePTime=0;
-    int currentTask=0;
+    //int currentTask=0;
     
-
+    /* 
     void calcSPPT()
     {
         for(Task t : tasks)
@@ -25,11 +26,13 @@ struct Job
         }
 
     }
+    */
 };
 
 struct Machine
 {
-    int time_left;
+    int workingOnJob=-1;
+    int timeLeft=0;
 };
 
 
