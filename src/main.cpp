@@ -22,6 +22,8 @@ int main(int argc, char** argv)
             Task tmpTask;
             in >> tmpTask.mNumber >> tmpTask.pTime;
             tmpJob.tasks.push_back(tmpTask);
+            Machine tmpMachine;
+            machines.push_back(tmpMachine);
         }
         jobs.push_back(tmpJob);
     }
@@ -35,6 +37,7 @@ int main(int argc, char** argv)
 
     std::vector<Job> testJobs = jobs;
     int timeElapsed;
+    
     while (!testJobs.empty())
     {
         for(Job j : testJobs)
