@@ -392,11 +392,11 @@ int main(int argc, char** argv)
 
     if(solMax<solMin)
     {
-        solutionToFile("SolMax",data,solMax);
+        solutionToFile(outFilePath,data,solMax);
     }
     else
     {
-        solutionToFile("SolMin",data,solMin);
+        solutionToFile(outFilePath,data,solMin);
     }
 
     return 0;
