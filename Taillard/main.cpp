@@ -99,6 +99,7 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
     in>>data.numOfJobs>>data.numOfMachines;
     in.ignore(1024,'\n');
     in.ignore(1024,'\n');
+    //std::cout<<data.numOfJobs << " " << data.numOfMachines << std::endl;
     for(int i=0;i<data.numOfJobs;i++)
     {
         Job tmpJob;
@@ -114,14 +115,17 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
         data.jIndex.push_back(i);
     }
     in.ignore(1024,'\n');
-    for(Job j : data.jobs)
+    in.ignore(1024,'\n');
+    for(Job &j : data.jobs)
     {
-        for(Task t : j.tasks)
+        for(Task &t : j.tasks)
         {
             int mnum;
             in >> mnum;
             t.mNumber = --mnum;
+            //std::cout<< t.mNumber << " ";
         }
+        //std::cout << std::endl;
     }
     in.close();
     for(int i=0;i<data.numOfMachines;i++)
