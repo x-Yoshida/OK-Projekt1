@@ -97,6 +97,8 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
     std::ifstream in;
     in.open(filePath);
     in>>data.numOfJobs>>data.numOfMachines;
+    in.ignore(1024,'\n');
+    in.ignore(1024,'\n');
     for(int i=0;i<data.numOfJobs;i++)
     {
         Job tmpJob;
@@ -104,12 +106,22 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
         for(int j=0;j<data.numOfMachines;j++)
         {
             Task tmpTask;
-            in >> tmpTask.mNumber >> tmpTask.pTime;
+            in >> tmpTask.pTime;
             tmpJob.tasks.push_back(tmpTask);
         }
         data.jobs.push_back(tmpJob);
         sol.res.push_back(std::vector<int>{});
         data.jIndex.push_back(i);
+    }
+    in.ignore(1024,'\n');
+    for(Job j : data.jobs)
+    {
+        for(Task t : j.tasks)
+        {
+            int mnum;
+            in >> mnum;
+            t.mNumber = --mnum;
+        }
     }
     in.close();
     for(int i=0;i<data.numOfMachines;i++)
