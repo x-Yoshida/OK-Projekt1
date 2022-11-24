@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <time.h>
+#include <chrono>
 
 ///pragma region nie robi w sumie nic poza poza pozwoleniem na zwinięcie tekstu w edytorze [source do informacji https://learn.microsoft.com/pl-pl/cpp/preprocessor/region-endregion?view=msvc-170 ]
 
@@ -28,8 +29,8 @@ struct Machine
 
 struct Solution
 {
-    int timeElapsed=0;
-    std::vector<std::vector<int>> res;
+    long timeElapsed=0;
+    std::vector<std::vector<long>> res;
     
     bool operator> (Solution &s)
     {
@@ -75,11 +76,6 @@ std::ostream& operator<< (std::ostream& stream,Job& j)
 
 #pragma region functions
 
-void printHelp()
-{
-    std::cout << "Help" << std::endl;
-}
-
 bool isInVector(std::vector<int> v, int num)
 {
     for(int i : v)
@@ -96,6 +92,11 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
 {
     std::ifstream in;
     in.open(filePath);
+    if(!in)
+    {
+        std::cout<<"Nie udało się otworzyć pliku " << filePath << std::endl;
+        exit(1); 
+    }
     in>>data.numOfJobs>>data.numOfMachines;
     for(int i=0;i<data.numOfJobs;i++)
     {
@@ -108,7 +109,7 @@ void readFile(std::string filePath,TestData &data,Solution &sol)
             tmpJob.tasks.push_back(tmpTask);
         }
         data.jobs.push_back(tmpJob);
-        sol.res.push_back(std::vector<int>{});
+        sol.res.push_back(std::vector<long>{});
         data.jIndex.push_back(i);
     }
     in.close();
@@ -273,21 +274,8 @@ int main(int argc, char** argv)
 {
     std::string filePath = "test.txt";
     std::string outFilePath = "res.txt";
-    // if(argc==1)
-    // {
-    //     printHelp();
-    //     return 0;
-    // }
     if(argc==2)
     {
-        if(argv[1][0]=='-')
-        {
-            if(argv[1][1]=='h')
-            {
-                printHelp();
-                return 0;
-            }
-        }
         filePath = argv[1];
     }
     if(argc==3)
@@ -302,6 +290,7 @@ int main(int argc, char** argv)
     Solution solMax;
 
     readFile(filePath,data,emptySol);
+
 
     solMin = greedyMin(data,emptySol);
     solMax = greedyMax(data,emptySol);
